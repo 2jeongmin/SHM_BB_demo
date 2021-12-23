@@ -1,8 +1,33 @@
+import 'dart:io';
+import 'dart:async';
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'pages.dart';
+import 'camera_page.dart';
 
-void main() => runApp(new WidgetDemo());
+
+void main() async {
+  // Ensure that plugin services are initialized so that `availableCameras()`
+  // can be called before `runApp()`
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Obtain a list of the available cameras on the device.
+  final cameras = await availableCameras();
+
+  // Get a specific camera from the list of available cameras.
+  final firstCamera = cameras.first;
+
+
+  runApp(WidgetDemo(camera: firstCamera));
+} 
 
 class WidgetDemo extends StatefulWidget {
+  const WidgetDemo({
+    Key? key,
+    required this.camera,
+  }) : super(key: key);
+
+  final CameraDescription camera;
   @override
   State<StatefulWidget> createState() => WidgetDemoState();
 }
@@ -12,10 +37,10 @@ class WidgetDemoState extends State<WidgetDemo> {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'Flutter Demo App',
-      home: new Scaffold(
-        appBar: new AppBar(
+      home: Scaffold(
+        appBar: AppBar(
           title: const Text('SHM_BB Demo'),
         ),
         body: getPage(),
@@ -80,79 +105,12 @@ class WidgetDemoState extends State<WidgetDemo> {
         page = page1();
         break;
       case 1:
-        page = page2();
+        page = TakePictureScreen(camera: widget.camera,);
         break;
       case 2:
         page = page3();
         break;
     }
     return page;
-  }
-
-  Container page1() {
-    return Container(
-      alignment: Alignment.center,
-      child: Text(
-        'Settings',
-        style: TextStyle(color: Colors.blue, fontSize: 30),
-      ),
-    );
-  }
-
-  GridView page2() {
-    return GridView.count(
-      padding: const EdgeInsets.all(10),
-      crossAxisSpacing: 10,
-      mainAxisSpacing: 50,
-      crossAxisCount: 3,
-      children: <Widget>[
-        Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.all(8),
-          child: const Text("pic 1"),
-          color: Colors.blue[100],
-        ),
-        Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.all(8),
-          child: const Text('pic 2'),
-          color: Colors.blue[200],
-        ),
-        Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.all(8),
-          child: const Text('pic 3'),
-          color: Colors.blue[300],
-        ),
-        Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.all(8),
-          child: const Text('pic 4'),
-          color: Colors.blue[400],
-        ),
-        Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.all(8),
-          child: const Text('pic 5'),
-          color: Colors.blue[500],
-        ),
-        Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.all(8),
-          child: const Text('pic 6'),
-          color: Colors.blue[600],
-        ),
-      ],
-    );
-  }
-
-  Container page3() {
-    return Container(
-      alignment: Alignment.center,
-      child: Text(
-        'Displacement Measurement',
-        style: TextStyle(color: Colors.blue, fontSize: 20),
-      ),
-    );
   }
 }
